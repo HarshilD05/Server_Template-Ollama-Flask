@@ -1,11 +1,16 @@
-from flask import Flask
+from flask import Flask, jsonify
 from config.ollama import init_ollama
-from routes.embed_routes import embed_bp
+from routes import main_router
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50MB
 
-app.register_blueprint(embed_bp, url_prefix="/api")
+@app.route("/", methods=["GET"])
+def index():
+    return jsonify({"status": "Server is running"}), 200
+
+for blueprint in main_router:
+    app.register_blueprint(blueprint, url_prefix="/api")
 
 if __name__ == "__main__":
     init_ollama()
